@@ -34,7 +34,8 @@ def execution():
     """
     global physical_time
     global displayed_time
-    recalculate_space_objects_positions(space_objects, time_step.get())
+    global space_objects
+    space_objects = recalculate_space_objects_positions(space_objects, time_step.get())
     for body in space_objects:
         update_object_position(space, body)
     physical_time += time_step.get()
@@ -84,9 +85,9 @@ def open_file_dialog():
     calculate_scale_factor(max_distance)
 
     for obj in space_objects:
-        if obj.type == 'star':
+        if obj.type == 'Star':
             create_star_image(space, obj)
-        elif obj.type == 'planet':
+        elif obj.type == 'Planet':
             create_planet_image(space, obj)
         else:
             raise AssertionError()
@@ -147,6 +148,7 @@ def main():
 
     root.mainloop()
     print('Modelling finished!')
+
 
 if __name__ == "__main__":
     main()

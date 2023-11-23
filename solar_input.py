@@ -2,6 +2,7 @@
 # license: GPLv3
 
 from solar_objects import Star, Planet
+import re
 
 
 def read_space_objects_data_from_file(input_filename):
@@ -19,17 +20,21 @@ def read_space_objects_data_from_file(input_filename):
             if len(line.strip()) == 0 or line[0] == '#':
                 continue  # пустые строки и строки-комментарии пропускаем
             object_type = line.split()[0].lower()
-            if object_type == "star":  # FIXME: do the same for planet
+            if object_type == "star":
                 star = Star()
                 parse_star_parameters(line, star)
                 objects.append(star)
+            elif object_type == "planet":    # добавлено
+                planet = Planet()
+                parse_planet_parameters(line, planet)
+                objects.append(planet)
             else:
                 print("Unknown space object")
 
     return objects
 
 
-def parse_star_parameters(line, star):
+def parse_star_parameters(line, star):    # добавлено
     """Считывает данные о звезде из строки.
     Входная строка должна иметь слеюущий формат:
     Star <радиус в пикселах> <цвет> <масса> <x> <y> <Vx> <Vy>
@@ -43,10 +48,12 @@ def parse_star_parameters(line, star):
     **line** — строка с описание звезды.
     **star** — объект звезды.
     """
+    pattern = re.compile(r'-?\d+.?\d*E?-?\d*')
+    star.type, star.R, star.color, star.m, star.x, star.y, star.Vx, star.Vy =\
+        map(lambda x: float(x) if pattern.match(x) else x, line.split())
 
-    pass  # FIXME: not done yet
 
-def parse_planet_parameters(line, planet):
+def parse_planet_parameters(line, planet):    # добавлено
     """Считывает данные о планете из строки.
     Предполагается такая строка:
     Входная строка должна иметь слеюущий формат:
@@ -61,7 +68,9 @@ def parse_planet_parameters(line, planet):
     **line** — строка с описание планеты.
     **planet** — объект планеты.
     """
-    pass  # FIXME: not done yet...
+    pattern = re.compile(r'-?\d+.?\d*E?-?\d*')
+    planet.type, planet.R, planet.color, planet.m, planet.x, planet.y, planet.Vx, \
+        planet.Vy = map(lambda x: float(x) if pattern.match(x) else x, line.split())
 
 
 def write_space_objects_data_to_file(output_filename, space_objects):
@@ -76,11 +85,10 @@ def write_space_objects_data_to_file(output_filename, space_objects):
     **space_objects** — список объектов планет и звёзд
     """
     with open(output_filename, 'w') as out_file:
-        for obj in space_objects:
-            print(out_file, "%s %d %s %f" % ('1', 2, '3', 4.5))
-            # FIXME: should store real values
+        out_file.writelines(f'{obj.type} {obj.R} {obj.color} {obj.m} {obj.x} {obj.y} {obj.Vx} {obj.Vy}\n' for obj in space_objects)
 
 # FIXME: хорошо бы ещё сделать функцию, сохранающую статистику в заданный файл...
+
 
 if __name__ == "__main__":
     print("This module is not for direct call!")
